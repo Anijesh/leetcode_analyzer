@@ -2,12 +2,14 @@ import hashlib
 import json
 from django.core.cache import cache
 from django.conf import settings
-import google.generativeai as genai
+from openai import OpenAI
 
-genai.configure(api_key=settings.GEMINI_API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+client = OpenAI(
+    api_key=settings.GROQ_API_KEY,
+    base_url="https://api.groq.com/openai/v1"
+)
 
-CACHE_TTL = 60 * 60 
+CACHE_TTL = 60 * 60  # 1 hour
 
 
 def build_prompt(problem_name, language, code, problem_description=''):
@@ -50,15 +52,29 @@ def get_analysis(problem_name, language, code, problem_description=''):
 
     cached = cache.get(cache_key)
     if cached:
-        return cached, True  
+        return cached, True
 
     prompt = build_prompt(problem_name, language, code, problem_description)
-    response = model.generate_content(prompt)
-    raw_text = response.text.strip()
 
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a senior competitive programmer. Always respond with valid JSON only. No markdown, no explanation."
+            },
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        temperature=0.3,
+    )
+
+    raw_text = response.choices[0].message.content.strip()
     cleaned = raw_text.replace('```json', '').replace('```', '').strip()
     result = json.loads(cleaned)
 
     cache.set(cache_key, result, CACHE_TTL)
 
-    return result, False  
+    return result, False
