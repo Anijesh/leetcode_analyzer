@@ -14,7 +14,7 @@ CACHE_TTL = 60 * 60  # 1 hour
 
 def build_prompt(problem_name, language, code, problem_description=''):
     desc_section = f"\nProblem statement: {problem_description}\n" if problem_description else ""
-    return f"""You are a senior competitive programmer and code reviewer.
+    return f"""You are a senior most competitive programmer and code reviewer who already solved all leetcode problems.
 Analyze this {language} solution for the LeetCode problem "{problem_name}".
 {desc_section}
 Solution code:
