@@ -4,10 +4,6 @@ from django.core.cache import cache
 from django.conf import settings
 from openai import OpenAI
 
-client = OpenAI(
-    api_key=settings.GROQ_API_KEY,
-    base_url="https://api.groq.com/openai/v1"
-)
 
 CACHE_TTL = 60 * 60
 
@@ -44,13 +40,12 @@ Use exactly this schema:
 
 def make_cache_key(problem_name, language, code):
     # same problem + same language + same code = same analysis
-    # so we hash all three together as one unique key
+    # hash all three so the key is always unique and consistent
     raw = f"{problem_name}:{language}:{code}"
     return "analysis:" + hashlib.sha256(raw.encode()).hexdigest()
 
 
-def get_analysis(problem_name, language, code, problem_description=''):
-    # basic checks before we do anything
+def get_analysis(problem_name, language, code, problem_description='', api_key=None):
     if not code.strip():
         raise ValueError("code can't be empty")
     if not problem_name.strip():
@@ -58,15 +53,23 @@ def get_analysis(problem_name, language, code, problem_description=''):
     if len(code) > 10000:
         raise ValueError("code is too long, max 10000 chars")
 
+   
+    key = api_key if api_key else settings.GROQ_API_KEY
+    if not key:
+        raise ValueError("no groq api key found — either pass one or set GROQ_API_KEY in .env")
+
+    client = OpenAI(
+        api_key=key,
+        base_url="https://api.groq.com/openai/v1"
+    )
+
     cache_key = make_cache_key(problem_name, language, code)
 
-    # check redis first — if it's there, no need to call groq
     try:
         cached = cache.get(cache_key)
         if cached:
             return cached, True
     except Exception:
-        # redis might be down, that's okay — just skip cache
         pass
 
     prompt = build_prompt(problem_name, language, code, problem_description)
