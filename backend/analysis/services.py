@@ -9,7 +9,7 @@ client = OpenAI(
     base_url="https://api.groq.com/openai/v1"
 )
 
-CACHE_TTL = 60 * 60  # 1 hour
+CACHE_TTL = 60 * 60
 
 
 def build_prompt(problem_name, language, code, problem_description=''):
@@ -43,16 +43,31 @@ Use exactly this schema:
 
 
 def make_cache_key(problem_name, language, code):
+    # same problem + same language + same code = same analysis
+    # so we hash all three together as one unique key
     raw = f"{problem_name}:{language}:{code}"
     return "analysis:" + hashlib.sha256(raw.encode()).hexdigest()
 
 
 def get_analysis(problem_name, language, code, problem_description=''):
+    # basic checks before we do anything
+    if not code.strip():
+        raise ValueError("code can't be empty")
+    if not problem_name.strip():
+        raise ValueError("problem name can't be empty")
+    if len(code) > 10000:
+        raise ValueError("code is too long, max 10000 chars")
+
     cache_key = make_cache_key(problem_name, language, code)
 
-    cached = cache.get(cache_key)
-    if cached:
-        return cached, True
+    # check redis first — if it's there, no need to call groq
+    try:
+        cached = cache.get(cache_key)
+        if cached:
+            return cached, True
+    except Exception:
+        # redis might be down, that's okay — just skip cache
+        pass
 
     prompt = build_prompt(problem_name, language, code, problem_description)
 
@@ -72,9 +87,16 @@ def get_analysis(problem_name, language, code, problem_description=''):
     )
 
     raw_text = response.choices[0].message.content.strip()
+
+    # groq sometimes wraps response in ```json blocks even when told not to
+    # so we strip those just in case
     cleaned = raw_text.replace('```json', '').replace('```', '').strip()
     result = json.loads(cleaned)
 
-    cache.set(cache_key, result, CACHE_TTL)
+    # store in redis for next time
+    try:
+        cache.set(cache_key, result, CACHE_TTL)
+    except Exception:
+        pass
 
     return result, False
