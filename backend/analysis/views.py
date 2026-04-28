@@ -26,13 +26,15 @@ class AnalyzeView(APIView):
         language = validated['language']
         code = validated['code']
         problem_description = validated.get('problem_description', '')
+        api_key = validated.get('api_key', '')
 
         try:
             result, cache_hit = get_analysis(
                 problem_name=problem_name,
                 language=language,
                 code=code,
-                problem_description=problem_description
+                problem_description=problem_description,
+                api_key=api_key
             )
 
             analysis = Analysis.objects.create(
