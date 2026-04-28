@@ -6,7 +6,7 @@ class AnalysisRequestSerializer(serializers.Serializer):
     language = serializers.CharField(max_length=50)
     problem_description = serializers.CharField(required=False, allow_blank=True)
     code = serializers.CharField()
-
+    api_key = serializers.CharField(required=False, allow_blank=True)
 class AnalysisResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Analysis
