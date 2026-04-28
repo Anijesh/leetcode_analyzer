@@ -7,6 +7,7 @@ from rest_framework import status
 from .serializers import AnalysisRequestSerializer, AnalysisResponseSerializer
 from .models import Analysis
 from .services import get_analysis
+import traceback
 
 
 class AnalyzeView(APIView):
@@ -47,6 +48,42 @@ class AnalyzeView(APIView):
             return Response(response_data, status=status.HTTP_201_CREATED)
 
         except Exception as e:
+            traceback.print_exc()
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class HistoryView(APIView):
+
+    def get(self, request):
+        try:
+            analyses = Analysis.objects.all()[:20]  # latest 20
+            serializer = AnalysisResponseSerializer(analyses, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            traceback.print_exc()
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class AnalysisDetailView(APIView):
+
+    def get(self, request, pk):
+        try:
+            analysis = Analysis.objects.get(pk=pk)
+            serializer = AnalysisResponseSerializer(analysis)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Analysis.DoesNotExist:
+            return Response(
+                {'error': 'Analysis not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            traceback.print_exc()
             return Response(
                 {'error': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
