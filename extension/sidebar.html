@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LeetCode Analyzer</title>
+  <link rel="stylesheet" href="sidebar.css" />
+</head>
+<body>
+  <div class="app">
+
+    <div class="header">
+      <div class="logo">
+        <span class="logo-leet">leet</span><span class="logo-analyzer">analyzer</span>
+      </div>
+      <div class="header-sub" id="header-sub">Open a LeetCode problem to start</div>
+    </div>
+
+    <div class="apikey-screen" id="apikey-screen" style="display:none">
+      <div class="apikey-box">
+        <div class="apikey-title">🔑 Enter your Groq API key</div>
+        <div class="apikey-desc">
+          Your key is stored only in your browser — never sent to our servers.
+          Get a free key at <strong>console.groq.com</strong>
+        </div>
+        <input
+          type="password"
+          class="apikey-input"
+          id="apikey-input"
+          placeholder="gsk_xxxxxxxxxxxxxxxx"
+        />
+        <button class="apikey-btn" id="apikey-save-btn">Save & Continue</button>
+        <div class="error-box" id="apikey-error" style="display:none"></div>
+      </div>
+    </div>
+
+    
+    <div class="main-app" id="main-app" style="display:none">
+
+      
+      <div class="problem-bar" id="problem-bar" style="display:none">
+        <div class="problem-title" id="problem-title"></div>
+        <div class="problem-meta">
+          <span class="difficulty-badge" id="difficulty-badge"></span>
+          <span class="topics-text" id="topics-text"></span>
+        </div>
+      </div>
+
+  
+      <div class="no-problem" id="no-problem">
+        <div class="no-problem-icon">💻</div>
+        <div class="no-problem-text">Open any LeetCode problem to get started</div>
+      </div>
+
+      
+      <div class="form-section">
+        <div class="field">
+          <label class="field-label">Language</label>
+          <select class="field-select" id="language">
+            <option>Python3</option>
+            <option>Python</option>
+            <option>JavaScript</option>
+            <option>TypeScript</option>
+            <option>Java</option>
+            <option>C++</option>
+            <option>C</option>
+            <option>C#</option>
+            <option>Go</option>
+            <option>Rust</option>
+            <option>Kotlin</option>
+            <option>Swift</option>
+            <option>Ruby</option>
+            <option>Scala</option>
+            <option>PHP</option>
+            <option>Dart</option>
+            <option>R</option>
+            <option>Haskell</option>
+            <option>Elixir</option>
+            <option>Bash</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <div class="field-label-row">
+            <label class="field-label">Your solution</label>
+            <button class="fetch-btn" id="fetch-code-btn">↓ Fetch from editor</button>
+          </div>
+          <textarea
+            class="field-textarea"
+            id="code"
+            placeholder="Paste your solution or click fetch..."
+            rows="10"
+          ></textarea>
+        </div>
+
+        <button class="analyze-btn" id="analyze-btn">
+          <span id="btn-text">⚡ Analyze Solution</span>
+        </button>
+
+        <div class="error-box" id="error-box" style="display:none"></div>
+
+     
+        <div class="change-key-row">
+          <button class="change-key-btn" id="change-key-btn">Change API key</button>
+        </div>
+      </div>
+
+    
+      <div class="result-section" id="result-section" style="display:none">
+
+        <div class="accepted-bar">
+          <div class="accepted-dot"></div>
+          <div>
+            <div class="accepted-text">Accepted</div>
+            <div class="accepted-sub" id="accepted-sub"></div>
+          </div>
+        </div>
+
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-label">⏱ Time</div>
+            <div class="metric-value" id="time-complexity"></div>
+            <div class="metric-desc" id="time-desc"></div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">🗂 Space</div>
+            <div class="metric-value" id="space-complexity"></div>
+            <div class="metric-desc" id="space-desc"></div>
+          </div>
+        </div>
+
+        <div class="result-card">
+          <div class="card-title">🧠 Approach</div>
+          <div class="kv">
+            <span class="kv-k">Current:</span>
+            <span class="kv-v" id="approach-current"></span>
+          </div>
+          <div class="kv">
+            <span class="kv-k">Suggested:</span>
+            <span class="kv-v orange" id="approach-suggested"></span>
+          </div>
+          <div class="kv">
+            <span class="kv-k">Key idea:</span>
+            <span class="kv-v" id="approach-keyidea"></span>
+          </div>
+          <div class="divider"></div>
+          <div class="card-subtitle">Alternatives</div>
+          <div class="prose" id="alternatives"></div>
+        </div>
+
+        <div class="result-card">
+          <div class="card-title">✨ Code Style</div>
+          <div class="rating-row">
+            <span class="kv-k">Readability:</span>
+            <span class="kv-v" id="readability"></span>
+            <span class="stars" id="readability-stars"></span>
+          </div>
+          <div class="rating-row">
+            <span class="kv-k">Structure:</span>
+            <span class="kv-v" id="structure"></span>
+            <span class="stars" id="structure-stars"></span>
+          </div>
+          <div class="divider"></div>
+          <div class="prose" id="style-suggestions"></div>
+        </div>
+
+        <div class="result-card">
+          <div class="card-title"> Improvements</div>
+          <div class="prose" id="improvements"></div>
+        </div>
+
+        <div class="result-card verdict-card">
+          <div class="card-title"> Verdict</div>
+          <div class="prose" id="verdict"></div>
+        </div>
+
+        <button class="analyze-again-btn" id="analyze-again-btn">Analyze another solution</button>
+
+      </div>
+    </div>
+  </div>
+  <script src="sidebar.js"></script>
+</body>
+</html>
