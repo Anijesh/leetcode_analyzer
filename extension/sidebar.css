@@ -35,3 +35,60 @@ body {
   color: #8d8d8d;
   margin-top: 3px;
 }
+
+.apikey-screen {
+  padding: 24px 16px;
+}
+
+.apikey-box {
+  background: #282828;
+  border: 1px solid #3d3d3d;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.apikey-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #eff1f6;
+}
+
+.apikey-desc {
+  font-size: 12px;
+  color: #8d8d8d;
+  line-height: 1.6;
+}
+
+.apikey-input {
+  background: #1a1a1a;
+  border: 1px solid #3d3d3d;
+  border-radius: 6px;
+  color: #eff1f6;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: 'Fira Mono', monospace;
+  outline: none;
+  width: 100%;
+}
+
+.apikey-input:focus {
+  border-color: #ffa116;
+}
+
+.apikey-btn {
+  background: #ffa116;
+  border: none;
+  border-radius: 6px;
+  color: #1a1a1a;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+}
+
+.apikey-btn:hover { background: #ffb84d; }
