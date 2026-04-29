@@ -11,3 +11,27 @@ body {
   font-size: 13px;
   -webkit-font-smoothing: antialiased;
 }
+
+.header {
+  background: #282828;
+  border-bottom: 1px solid #3d3d3d;
+  padding: 12px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.logo-leet { color: #ffa116; }
+.logo-analyzer { color: #eff1f6; }
+
+.header-sub {
+  font-size: 11px;
+  color: #8d8d8d;
+  margin-top: 3px;
+}
