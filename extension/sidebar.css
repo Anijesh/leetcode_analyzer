@@ -92,3 +92,50 @@ body {
 }
 
 .apikey-btn:hover { background: #ffb84d; }
+
+
+.problem-bar {
+  background: #1e2e1e;
+  border-bottom: 1px solid #2cbb5d33;
+  padding: 10px 16px;
+}
+
+.problem-title {
+  color: #eff1f6;
+  font-weight: 500;
+  font-size: 13px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.problem-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.difficulty-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: #1a2e1a;
+  color: #2cbb5d;
+  font-weight: 500;
+}
+
+.difficulty-badge.medium {
+  background: #2e2a1a;
+  color: #ffa116;
+}
+
+.difficulty-badge.hard {
+  background: #2e1a1a;
+  color: #ef4743;
+}
+
+.topics-text {
+  font-size: 11px;
+  color: #8d8d8d;
+}
