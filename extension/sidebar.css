@@ -267,3 +267,13 @@ body {
 }
 
 .change-key-btn:hover { color: #eff1f6; }
+
+.error-box {
+  background: #2e1a1a;
+  border: 1px solid #a32d2d44;
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: #f09595;
+  font-size: 12px;
+  line-height: 1.6;
+}
