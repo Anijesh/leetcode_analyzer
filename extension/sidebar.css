@@ -139,3 +139,23 @@ body {
   font-size: 11px;
   color: #8d8d8d;
 }
+
+
+.no-problem {
+  padding: 32px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.no-problem-icon {
+  font-size: 40px;
+}
+
+.no-problem-text {
+  color: #8d8d8d;
+  font-size: 13px;
+  line-height: 1.6;
+}
