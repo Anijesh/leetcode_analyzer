@@ -9,21 +9,29 @@ CACHE_TTL = 60 * 60
 
 
 def build_prompt(problem_name, language, code, problem_description=''):
-    desc_section = f"\nProblem statement: {problem_description}\n" if problem_description else ""
+    desc_section = f"\nProblem statement (includes examples and constraints):\n{problem_description}\n" if problem_description else ""
     return f"""You are a senior most competitive programmer and code reviewer who already solved all leetcode problems.
-Analyze this {language} solution for the LeetCode problem "{problem_name}".
+
+Your job is to analyze if the given code actually solves the specific problem "{problem_name}".
+Be very strict — if the code is a solution to a DIFFERENT problem (even a similar one), mark it as wrong.
+For example, if someone submits a Two Sum solution for House Robber V, that is WRONG even if the code runs.
 {desc_section}
-Solution code:
+The code being analyzed:
 ```{language}
 {code}
 ```
 
+First verify: does this code actually solve "{problem_name}" based on its examples and constraints?
+If the code solves a different problem entirely, status must be "wrong".
+
 Reply ONLY with valid JSON — no markdown, no backticks, no explanation outside the JSON.
 Use exactly this schema:
 {{
+  "status": "accepted or partial or wrong",
+  "status_reason": "one sentence explaining why you chose this status — be specific about what the code does vs what the problem needs",
   "approach_current": "short label e.g. Array / Hash Map",
-  "approach_suggested": "short label e.g. Two Pointers",
-  "approach_keyidea": "one sentence describing the core insight",
+  "approach_suggested": "short label e.g. Two Pointers / Dynamic Programming",
+  "approach_keyidea": "one sentence describing the core insight needed for this specific problem",
   "alternatives": "2-3 sentences on alternative approaches and tradeoffs",
   "time_complexity": "O(n)",
   "time_desc": "one line explanation of why",
@@ -33,7 +41,7 @@ Use exactly this schema:
   "structure": "Excellent or Good or Average or Fair or Poor",
   "style_suggestions": "2-3 specific style improvement tips",
   "improvements": "3-5 concrete improvement suggestions as a short paragraph",
-  "verdict": "2-3 sentence overall summary with encouragement",
+  "verdict": "2-3 sentence overall summary — if wrong solution mention what problem this code actually solves",
   "accepted_sub": "short tagline e.g. All test cases pass · O(n) time · O(1) space"
 }}"""
 
@@ -79,24 +87,22 @@ def get_analysis(problem_name, language, code, problem_description='', api_key=N
         messages=[
             {
                 "role": "system",
-                "content": "You are a senior competitive programmer. Always respond with valid JSON only. No markdown, no explanation."
+                "content": "You are a senior competitive programmer. You are very strict about whether code solves the exact problem given. Always respond with valid JSON only. No markdown, no explanation."
             },
             {
                 "role": "user",
                 "content": prompt
             }
         ],
-        temperature=0.3,
+        temperature=0.1,  
     )
 
     raw_text = response.choices[0].message.content.strip()
 
-    # groq sometimes wraps response in ```json blocks even when told not to
-    # so we strip those just in case
+
     cleaned = raw_text.replace('```json', '').replace('```', '').strip()
     result = json.loads(cleaned)
 
-    # store in redis for next time
     try:
         cache.set(cache_key, result, CACHE_TTL)
     except Exception:
