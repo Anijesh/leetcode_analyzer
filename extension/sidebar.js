@@ -34,8 +34,16 @@ function setLoading(loading) {
 }
 
 
-function getStatus(verdict, improvements) {
-  const text = (verdict + ' ' + improvements).toLowerCase()
+function getStatus(result) {
+  if (result.status) {
+    const s = result.status.toLowerCase().trim()
+    if (s === 'wrong') return 'wrong'
+    if (s === 'partial') return 'partial'
+    if (s === 'accepted') return 'accepted'
+  }
+
+  // fallback — read groq's own words from verdict and improvements
+  const text = (result.verdict + ' ' + result.improvements + ' ' + (result.status_reason || '')).toLowerCase()
 
   if (
     text.includes('incorrect') ||
@@ -43,21 +51,16 @@ function getStatus(verdict, improvements) {
     text.includes('incomplete') ||
     text.includes('does not correctly') ||
     text.includes('does not solve') ||
-    text.includes('will not') ||
+    text.includes('different problem') ||
+    text.includes('will not pass') ||
     text.includes('fails')
-  ) {
-    return 'wrong'
-  }
+  ) return 'wrong'
 
   if (
     text.includes('partial') ||
     text.includes('not optimal') ||
-    text.includes('suboptimal') ||
-    text.includes('could be improved') ||
-    text.includes('room for improvement')
-  ) {
-    return 'partial'
-  }
+    text.includes('suboptimal')
+  ) return 'partial'
 
   return 'accepted'
 }
@@ -133,7 +136,6 @@ document.getElementById('apikey-save-btn').addEventListener('click', () => {
     showMainApp()
   })
 })
-
 
 document.getElementById('change-key-btn').addEventListener('click', () => {
   chrome.storage.local.remove('groq_api_key', () => {
@@ -258,7 +260,7 @@ document.getElementById('analyze-btn').addEventListener('click', async () => {
 
       const result = responseData.result
 
-      const status = getStatus(result.verdict, result.improvements)
+      const status = getStatus(result)
       updateStatusBar(status, result.accepted_sub)
 
       set('time-complexity', result.time_complexity)
@@ -275,7 +277,10 @@ document.getElementById('analyze-btn').addEventListener('click', async () => {
       document.getElementById('structure-stars').textContent = stars(result.structure)
       set('style-suggestions', result.style_suggestions)
       set('improvements', result.improvements)
-      set('verdict', result.verdict)
+      set('verdict', result.status_reason
+        ? `${result.status_reason}\n\n${result.verdict}`
+        : result.verdict
+      )
 
       document.getElementById('result-section').style.display = 'flex'
 
