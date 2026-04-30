@@ -34,13 +34,70 @@ function setLoading(loading) {
 }
 
 
+function getStatus(verdict, improvements) {
+  const text = (verdict + ' ' + improvements).toLowerCase()
+
+  if (
+    text.includes('incorrect') ||
+    text.includes('wrong') ||
+    text.includes('incomplete') ||
+    text.includes('does not correctly') ||
+    text.includes('does not solve') ||
+    text.includes('will not') ||
+    text.includes('fails')
+  ) {
+    return 'wrong'
+  }
+
+  if (
+    text.includes('partial') ||
+    text.includes('not optimal') ||
+    text.includes('suboptimal') ||
+    text.includes('could be improved') ||
+    text.includes('room for improvement')
+  ) {
+    return 'partial'
+  }
+
+  return 'accepted'
+}
+
+function updateStatusBar(status, acceptedSub) {
+  const bar = document.querySelector('.accepted-bar')
+  const dot = document.querySelector('.accepted-dot')
+  const text = document.querySelector('.accepted-text')
+  const sub = document.getElementById('accepted-sub')
+
+  if (status === 'wrong') {
+    bar.style.background = '#2e1a1a'
+    bar.style.borderColor = '#ef474333'
+    dot.style.background = '#ef4743'
+    text.style.color = '#ef4743'
+    text.textContent = 'Wrong Answer'
+  } else if (status === 'partial') {
+    bar.style.background = '#2e2a1a'
+    bar.style.borderColor = '#ffa11633'
+    dot.style.background = '#ffa116'
+    text.style.color = '#ffa116'
+    text.textContent = 'Partial Solution'
+  } else {
+    bar.style.background = '#1e2e1e'
+    bar.style.borderColor = '#2cbb5d33'
+    dot.style.background = '#2cbb5d'
+    text.style.color = '#2cbb5d'
+    text.textContent = 'Accepted'
+  }
+
+  sub.textContent = acceptedSub || ''
+}
+
+
+
 function loadApiKey() {
   chrome.storage.local.get('groq_api_key', (data) => {
     if (data.groq_api_key) {
-      
       showMainApp()
     } else {
-      
       showApiKeyScreen()
     }
   })
@@ -54,10 +111,8 @@ function showApiKeyScreen() {
 function showMainApp() {
   document.getElementById('apikey-screen').style.display = 'none'
   document.getElementById('main-app').style.display = 'block'
-  
   fetchProblemData()
 }
-
 
 document.getElementById('apikey-save-btn').addEventListener('click', () => {
   const key = document.getElementById('apikey-input').value.trim()
@@ -203,8 +258,9 @@ document.getElementById('analyze-btn').addEventListener('click', async () => {
 
       const result = responseData.result
 
-      
-      set('accepted-sub', result.accepted_sub)
+      const status = getStatus(result.verdict, result.improvements)
+      updateStatusBar(status, result.accepted_sub)
+
       set('time-complexity', result.time_complexity)
       set('time-desc', result.time_desc)
       set('space-complexity', result.space_complexity)
@@ -221,7 +277,6 @@ document.getElementById('analyze-btn').addEventListener('click', async () => {
       set('improvements', result.improvements)
       set('verdict', result.verdict)
 
-      
       document.getElementById('result-section').style.display = 'flex'
 
     } catch (err) {
