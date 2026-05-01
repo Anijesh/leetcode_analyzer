@@ -38,29 +38,20 @@ function getStatus(result) {
   if (result.status) {
     const s = result.status.toLowerCase().trim()
     if (s === 'wrong') return 'wrong'
-    if (s === 'partial') return 'partial'
     if (s === 'accepted') return 'accepted'
   }
 
-  // fallback — read groq's own words from verdict and improvements
+  // fallback — read groq's own words if status field is missing
   const text = (result.verdict + ' ' + result.improvements + ' ' + (result.status_reason || '')).toLowerCase()
 
   if (
     text.includes('incorrect') ||
     text.includes('wrong') ||
-    text.includes('incomplete') ||
     text.includes('does not correctly') ||
     text.includes('does not solve') ||
     text.includes('different problem') ||
-    text.includes('will not pass') ||
     text.includes('fails')
   ) return 'wrong'
-
-  if (
-    text.includes('partial') ||
-    text.includes('not optimal') ||
-    text.includes('suboptimal')
-  ) return 'partial'
 
   return 'accepted'
 }
@@ -77,12 +68,6 @@ function updateStatusBar(status, acceptedSub) {
     dot.style.background = '#ef4743'
     text.style.color = '#ef4743'
     text.textContent = 'Wrong Answer'
-  } else if (status === 'partial') {
-    bar.style.background = '#2e2a1a'
-    bar.style.borderColor = '#ffa11633'
-    dot.style.background = '#ffa116'
-    text.style.color = '#ffa116'
-    text.textContent = 'Partial Solution'
   } else {
     bar.style.background = '#1e2e1e'
     bar.style.borderColor = '#2cbb5d33'
