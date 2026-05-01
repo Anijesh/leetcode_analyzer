@@ -9,3 +9,4 @@ class AnalysisAdmin(admin.ModelAdmin):
     list_filter = ['language', 'cache_hit']
     search_fields = ['problem_name']
     readonly_fields = ['created_at', 'cache_hit', 'result']
+    verbose_name_plural = 'Analyses'

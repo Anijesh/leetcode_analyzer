@@ -159,7 +159,6 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^chrome-extension://.*$",
 ]
 
-# Gemini API key
 GROQ_API_KEY = os.getenv('GROQ_API_KEY')
 
 # Django REST Framework

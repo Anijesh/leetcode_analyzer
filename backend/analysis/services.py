@@ -15,20 +15,26 @@ def build_prompt(problem_name, language, code, problem_description=''):
 Your job is to analyze if the given code actually solves the specific problem "{problem_name}".
 Be very strict — if the code is a solution to a DIFFERENT problem (even a similar one), mark it as wrong.
 For example, if someone submits a Two Sum solution for House Robber V, that is WRONG even if the code runs.
+
+STATUS RULES — follow these exactly, no exceptions:
+- "accepted" → code correctly solves the problem based on the given examples and constraints
+- "wrong" → code fails any of the given examples OR is clearly a solution to a completely different problem
+
 {desc_section}
 The code being analyzed:
 ```{language}
 {code}
 ```
 
-First verify: does this code actually solve "{problem_name}" based on its examples and constraints?
-If the code solves a different problem entirely, status must be "wrong".
+Step 1: Check if this code solves "{problem_name}" or a different problem entirely.
+Step 2: Trace through the examples given in the problem statement manually with this code.
+Step 3: Based on your trace, assign the correct status.
 
 Reply ONLY with valid JSON — no markdown, no backticks, no explanation outside the JSON.
 Use exactly this schema:
 {{
-  "status": "accepted or partial or wrong",
-  "status_reason": "one sentence explaining why you chose this status — be specific about what the code does vs what the problem needs",
+  "status": "accepted or wrong",
+  "status_reason": "one sentence explaining why — be specific e.g. 'code fails on input ()[]{{}} because curly braces are not handled' or 'code solves Two Sum not House Robber V'",
   "approach_current": "short label e.g. Array / Hash Map",
   "approach_suggested": "short label e.g. Two Pointers / Dynamic Programming",
   "approach_keyidea": "one sentence describing the core insight needed for this specific problem",
@@ -41,8 +47,8 @@ Use exactly this schema:
   "structure": "Excellent or Good or Average or Fair or Poor",
   "style_suggestions": "2-3 specific style improvement tips",
   "improvements": "3-5 concrete improvement suggestions as a short paragraph",
-  "verdict": "2-3 sentence overall summary — if wrong solution mention what problem this code actually solves",
-  "accepted_sub": "short tagline e.g. All test cases pass · O(n) time · O(1) space"
+  "verdict": "2-3 sentence overall summary — if wrong mention what problem this code actually solves",
+  "accepted_sub": "short tagline showing complexity only e.g. O(n) time · O(1) space — never say all test cases pass"
 }}"""
 
 
@@ -87,14 +93,14 @@ def get_analysis(problem_name, language, code, problem_description='', api_key=N
         messages=[
             {
                 "role": "system",
-                "content": "You are a senior competitive programmer. You are very strict about whether code solves the exact problem given. Always respond with valid JSON only. No markdown, no explanation."
+                "content": "You are a senior competitive programmer. You are very strict about whether code solves the exact problem given. Always trace through examples manually before deciding status. Always respond with valid JSON only. No markdown, no explanation."
             },
             {
                 "role": "user",
                 "content": prompt
             }
         ],
-        temperature=0.1,  
+        temperature=0.1,
     )
 
     raw_text = response.choices[0].message.content.strip()
