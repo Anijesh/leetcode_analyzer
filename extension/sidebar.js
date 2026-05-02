@@ -149,26 +149,21 @@ function fetchProblemData() {
       const data = response.data
       currentProblemData = data
 
-      
       document.getElementById('no-problem').style.display = 'none'
 
-      
       const bar = document.getElementById('problem-bar')
       bar.style.display = 'block'
       set('problem-title', data.title)
       set('header-sub', data.title || 'Problem detected')
 
-      
       const badge = document.getElementById('difficulty-badge')
       badge.textContent = data.difficulty
       badge.className = 'difficulty-badge'
       if (data.difficulty === 'Medium') badge.classList.add('medium')
       if (data.difficulty === 'Hard') badge.classList.add('hard')
 
-
       set('topics-text', data.topics.slice(0, 3).join(' · '))
 
-      
       if (data.language) {
         const select = document.getElementById('language')
         const match = Array.from(select.options).find(
@@ -181,10 +176,24 @@ function fetchProblemData() {
 }
 
 
+document.getElementById('refresh-btn').addEventListener('click', () => {
+  document.getElementById('result-section').style.display = 'none'
+  document.getElementById('code').value = ''
+  hideError('error-box')
+  fetchProblemData()
+})
+
 
 document.getElementById('fetch-code-btn').addEventListener('click', () => {
+  const btn = document.getElementById('fetch-code-btn')
+  btn.textContent = '⏳ Fetching...'
+  btn.disabled = true
+
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { type: 'GET_PROBLEM_DATA' }, (response) => {
+      btn.textContent = '↓ Fetch from editor'
+      btn.disabled = false
+
       if (response?.data?.code) {
         document.getElementById('code').value = response.data.code
       } else {
@@ -193,6 +202,7 @@ document.getElementById('fetch-code-btn').addEventListener('click', () => {
     })
   })
 })
+
 
 
 
@@ -212,7 +222,6 @@ document.getElementById('analyze-btn').addEventListener('click', async () => {
     return
   }
 
-  
   chrome.storage.local.get('groq_api_key', async (data) => {
     const apiKey = data.groq_api_key
 
@@ -280,7 +289,6 @@ document.getElementById('analyze-btn').addEventListener('click', async () => {
 
 
 document.getElementById('analyze-again-btn').addEventListener('click', () => {
-  
   document.getElementById('result-section').style.display = 'none'
   document.getElementById('code').value = ''
   hideError('error-box')
