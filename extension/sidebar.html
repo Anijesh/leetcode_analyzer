@@ -34,25 +34,24 @@
       </div>
     </div>
 
-    
     <div class="main-app" id="main-app" style="display:none">
 
-      
       <div class="problem-bar" id="problem-bar" style="display:none">
-        <div class="problem-title" id="problem-title"></div>
+        <div class="problem-title-row">
+          <div class="problem-title" id="problem-title"></div>
+          <button class="refresh-btn" id="refresh-btn" title="Refresh problem">↺</button>
+        </div>
         <div class="problem-meta">
           <span class="difficulty-badge" id="difficulty-badge"></span>
           <span class="topics-text" id="topics-text"></span>
         </div>
       </div>
 
-  
       <div class="no-problem" id="no-problem">
         <div class="no-problem-icon">💻</div>
         <div class="no-problem-text">Open any LeetCode problem to get started</div>
       </div>
 
-      
       <div class="form-section">
         <div class="field">
           <label class="field-label">Language</label>
@@ -99,13 +98,11 @@
 
         <div class="error-box" id="error-box" style="display:none"></div>
 
-     
         <div class="change-key-row">
           <button class="change-key-btn" id="change-key-btn">Change API key</button>
         </div>
       </div>
 
-    
       <div class="result-section" id="result-section" style="display:none">
 
         <div class="accepted-bar">
@@ -165,12 +162,12 @@
         </div>
 
         <div class="result-card">
-          <div class="card-title"> Improvements</div>
+          <div class="card-title">🔧 Improvements</div>
           <div class="prose" id="improvements"></div>
         </div>
 
         <div class="result-card verdict-card">
-          <div class="card-title"> Verdict</div>
+          <div class="card-title">🏆 Verdict</div>
           <div class="prose" id="verdict"></div>
         </div>
 
