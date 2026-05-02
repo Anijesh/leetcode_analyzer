@@ -13,12 +13,11 @@ def build_prompt(problem_name, language, code, problem_description=''):
     return f"""You are a senior most competitive programmer and code reviewer who already solved all leetcode problems.
 
 Your job is to analyze if the given code actually solves the specific problem "{problem_name}".
-Be very strict — if the code is a solution to a DIFFERENT problem (even a similar one), mark it as wrong.
-For example, if someone submits a Two Sum solution for House Robber V, that is WRONG even if the code runs.
+While you should ensure the code doesn't solve a completely different problem (e.g. submitting Two Sum for House Robber), DO NOT be overly pedantic or falsely flag correct solutions as wrong. Recognize standard algorithm patterns (like expand-around-center, DP, etc.).
 
 STATUS RULES — follow these exactly, no exceptions:
-- "accepted" → code correctly solves the problem based on the given examples and constraints
-- "wrong" → code fails any of the given examples OR is clearly a solution to a completely different problem
+- "accepted" → code correctly solves the problem, handles necessary edge cases, and its logic is sound.
+- "wrong" → code has a clear, provable logical flaw that fails given examples, OR it solves a completely different problem.
 
 {desc_section}
 The code being analyzed:
@@ -33,6 +32,7 @@ Step 3: Based on your trace, assign the correct status.
 Reply ONLY with valid JSON — no markdown, no backticks, no explanation outside the JSON.
 Use exactly this schema:
 {{
+  "reasoning_trace": "Step-by-step logical trace of the code. Analyze its approach, correctness, and how it handles edge cases (e.g., even/odd lengths). Think carefully before marking it wrong.",
   "status": "accepted or wrong",
   "status_reason": "one sentence explaining why — be specific e.g. 'code fails on input ()[]{{}} because curly braces are not handled' or 'code solves Two Sum not House Robber V'",
   "approach_current": "short label e.g. Array / Hash Map",
@@ -68,7 +68,7 @@ def get_analysis(problem_name, language, code, problem_description='', api_key=N
         raise ValueError("code is too long, max 10000 chars")
 
    
-    key = api_key if api_key else settings.GROQ_API_KEY
+    key =api_key if api_key else settings.GROQ_API_KEY
     if not key:
         raise ValueError("no groq api key found — either pass one or set GROQ_API_KEY in .env")
 
