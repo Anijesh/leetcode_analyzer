@@ -21,7 +21,10 @@ class Analysis(models.Model):
         ('Dart', 'Dart'),
         ('Elixir', 'Elixir'),
         ('Erlang','Erlang'),
-        ('Racket', 'Racket')
+        ('Racket', 'Racket'),
+        ('R','R'),
+        ('Haskell','Haskell'),
+        ('Bash','Bash')
     ]
     problem_name = models.CharField(max_length = 500)
     language = models.CharField(max_length=30, choices=LANGUAGE_CHOICE)
@@ -33,6 +36,7 @@ class Analysis(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        verbose_name_plural = 'Analyses'
 
     def __str__(self):
         return f"{self.problem_name} ({self.language})"
