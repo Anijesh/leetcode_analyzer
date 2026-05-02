@@ -21,6 +21,12 @@
       "matches": ["https://leetcode.com/problems/*"],
       "js": ["content.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://leetcode.com/problems/*"],
+      "js": ["inject.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
     }
   ],
   "side_panel": {
